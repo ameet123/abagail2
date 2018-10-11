@@ -33,7 +33,7 @@ public class EyeStateTest {
     private static DecimalFormat df = new DecimalFormat("0.00");
     private static String[] oaNames = {"RHC", "SA", "GA"};
 
-    private static int[] optIterations = new int[]{2000, 3000, 100};
+    private static int[] optIterations = new int[]{4000, 4000, 50};
 
     private BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     private BackPropagationNetwork networks[] = new BackPropagationNetwork[3];

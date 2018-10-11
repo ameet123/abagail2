@@ -24,7 +24,7 @@ public class DiscreteUniformDistribution extends AbstractDistribution {
      * Make a new discrete permutation distribution
      * @param n the size of the data
      */
-    public DiscreteUniformDistribution(int[] n) {
+public DiscreteUniformDistribution(int[] n) {
         this.n = n;
         p = n[0];
         for (int i = 1; i < n.length; i++) {

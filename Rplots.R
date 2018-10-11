@@ -43,3 +43,21 @@ sa_error2_g<-ggplot(data=sa_error2, aes(x=iteration, y=error)) +
   geom_line( )+
   geom_point(color="red")+labs(title="Simulated Annealing: Error[iterations=3000]")
 print(sa_error2_g)
+# GA
+ga_error<- read.csv("iter-1/GA_error.csv",header=FALSE)
+colnames(ga_error)<-c("iteration","error")
+ga_error_g<-ggplot(data=ga_error, aes(x=iteration, y=error)) +
+  geom_line( )+
+  geom_point( )+labs(title="Genetic Algorithm: Error[iterations=100]")
+print(ga_error_g)
+
+ga_acc<- read.csv("iter-1/GA_acc_testTime.csv",header=FALSE)
+colnames(ga_acc)<-c("sample_num","testing_sec","accuracy")
+ga_acc_g<-ggplot(data=ga_acc, aes(x=sample_num, y=accuracy)) +
+  geom_line( )+
+  geom_point( )+labs(title="Genetic Algorithm: Accuracy [iterations=100]")
+print(ga_acc_g)
+ga_test_g<-ggplot(data=ga_acc, aes(x=sample_num, y=testing_sec)) +
+  geom_line( )+
+  geom_point( )+labs(title="Genetic Algorithm: Testing sec. [iterations=100]")
+print(ga_test_g)

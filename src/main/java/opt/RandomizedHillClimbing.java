@@ -43,7 +43,7 @@ public class RandomizedHillClimbing extends OptimizationAlgorithm {
     }
 
     /**
-     * @see opt.OptimizationAlgorithm#getOptimalData()
+     * @see opt.OptimizationAlgorithm#getOptimal()
      */
     public Instance getOptimal() {
         return cur;
