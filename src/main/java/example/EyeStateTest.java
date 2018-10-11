@@ -15,68 +15,63 @@ import shared.Instance;
 import shared.SumOfSquaresError;
 import util.InstanceUtil;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
 
 
 public class EyeStateTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(EyeStateTest.class);
+
     private static final String eyeFile = "C:\\Users\\AF55267\\Documents\\personal\\ML\\homework\\hw-2\\abagail2" +
             "\\data\\foo.csv";
     private static final int NUM_COLS = 15;
     private static final int LABEL_POS = 14;
-    private static int inputLayer = 128, hiddenLayer = 64, outputLayer = 1, trainingIterations = 2000;
-    private static DecimalFormat df = new DecimalFormat("0.000");
+    private static int inputLayer = 128, hiddenLayer = 64, outputLayer = 1;
+    private static DecimalFormat df = new DecimalFormat("0.00");
     private static String[] oaNames = {"RHC", "SA", "GA"};
-    private static int[] optIterations = new int[]{1000, 2000, 50};
+
+    private static int[] optIterations = new int[]{2000, 3000, 100};
 
     private BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
-
     private BackPropagationNetwork networks[] = new BackPropagationNetwork[3];
     private NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[3];
     private OptimizationAlgorithm[] oa = new OptimizationAlgorithm[3];
-//    private BackPropagationNetwork networks[] = new BackPropagationNetwork[1];
-//    private NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[1];
-//    private OptimizationAlgorithm[] oa = new OptimizationAlgorithm[1];
-
-
     private DataSet set;
     private Instance[] trainSet;
 
-    public EyeStateTest(String filename) {
+    public EyeStateTest(String filename) throws IOException {
         Instance[] allInstances = InstanceUtil.loadInstances(filename, NUM_COLS, true, LABEL_POS);
         List<Instance[]> testTrainList = InstanceUtil.testTrainSplit(allInstances, 5);
         trainSet = testTrainList.get(0);
         set = new DataSet(trainSet);
         // run setup
         setup();
-        setupOptimizationAlgorithms();
         process();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         EyeStateTest eye = new EyeStateTest(eyeFile);
     }
-
 
     private void setup() {
         for (int i = 0; i < oa.length; i++) {
             networks[i] = factory.createClassificationNetwork(new int[]{inputLayer, hiddenLayer, outputLayer});
             nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], new SumOfSquaresError());
         }
-    }
-
-    private void setupOptimizationAlgorithms() {
         oa[0] = new RandomizedHillClimbing(nnop[0]);
         oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
         oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
     }
 
     private void train(OptimizationAlgorithm oa, BackPropagationNetwork network, String oaName, Instance[] trainSet,
-                       int myIterations) {
+                       int myIterations) throws IOException {
         int printThreshold = Math.round(myIterations / 10);
         ErrorMeasure measure = new SumOfSquaresError();
         LOGGER.info("\nError results for " + oaName + "\n---------------------------");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(oaName + "_error.csv"));
         for (int i = 0; i < myIterations; i++) {
             oa.train();
             double error = 0;
@@ -87,14 +82,15 @@ public class EyeStateTest {
                 example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
                 error += measure.value(output, example);
             }
-
-            if (i % printThreshold == 0) {
+            writer.write(i + "," + df.format(error) + "\n");
+            if (printThreshold != 0 && i % printThreshold == 0) {
                 LOGGER.info("{}-> {}", i, df.format(error));
             }
         }
+        writer.close();
     }
 
-    private void process() {
+    private void process() throws IOException {
         for (int i = 0; i < oa.length; i++) {
             double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
             train(oa[i], networks[i], oaNames[i], trainSet, optIterations[i]); //trainer.train();
@@ -106,8 +102,11 @@ public class EyeStateTest {
             networks[i].setWeights(optimalInstance.getData());
 
             double predicted, actual;
+            String acc = null;
             start = System.nanoTime();
             int printThreshold = Math.round(trainSet.length / 10);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(oaNames[i] + "_acc_testTime.csv"));
 
             for (int j = 0; j < trainSet.length; j++) {
                 networks[i].setInputValues(trainSet[j].getData());
@@ -123,15 +122,19 @@ public class EyeStateTest {
                 end = System.nanoTime();
                 testingTime = end - start;
                 testingTime /= Math.pow(10, 9);
-
+                acc = df.format(correct / (correct + incorrect) * 100);
                 if (j % printThreshold == 0) {
-                    LOGGER.info("\n[{}]-> Results for " + oaNames[i] + ": \nCorrectly:" + correct +
-                            " Incorrectly: " + incorrect + "  Percent correct: "
-                            + df.format(correct / (correct + incorrect) * 100) + "% [Training time: " + df.format
-                            (trainingTime) + " sec. Testing time: " + df.format(testingTime) + " sec.]\n");
+                    LOGGER.info("\n[{}:{}]-> Results for " + oaNames[i] + ": Correct:" + correct +
+                            " Incorrect: " + incorrect + "  Accuracy: "
+                            + acc + "% [ Testing time: " + df.format(testingTime) + " sec.]\n", oaNames[i],
+                            optIterations[i]);
                 }
+                writer.write(j + "," + df.format(testingTime) + "," + acc + "\n");
             }
-            LOGGER.info("Final: %Correct={}");
+            writer.close();
+            LOGGER.info("[{}]==> Final: Accuracy={}% Training Time: {} sec. Total Time:{} sec.", oaNames[i],
+                    acc, df.format(trainingTime),
+                    df.format((System.nanoTime() - start) / Math.pow(10, 9)));
         }
     }
 }
