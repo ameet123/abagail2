@@ -61,3 +61,32 @@ ga_test_g<-ggplot(data=ga_acc, aes(x=sample_num, y=testing_sec)) +
   geom_line( )+
   geom_point( )+labs(title="Genetic Algorithm: Testing sec. [iterations=100]")
 print(ga_test_g)
+
+# PRoblems 
+# Two Color
+root_dir<-"C:/Users/AF55267/Documents/personal/ML/homework/hw-2/abagail2/output"
+setwd(root_dir)
+two_c<-read.csv("comp2C.csv",header=FALSE)
+colnames(two_c)<-c("optimizer","elapsed_ms","optimal_count")
+two_c$xIndex <- as.numeric(row.names(two_c))
+twoc_mean<-aggregate(. ~ optimizer,two_c[-4],mean)
+
+two_c_g<-ggplot(data=two_c, aes(x=xIndex, y=elapsed_ms,
+                                group=optimizer,color=optimizer)) +
+  geom_line( )+
+  geom_point( )+labs(title="Two Color: Elapsed ms.")
+print(two_c_g)
+# without mimic 
+twoc_sans_mimic<- subset(two_c,optimizer!="MIMIC")
+twoc_rest_g<-ggplot(data=twoc_sans_mimic, aes(x=xIndex, y=elapsed_ms,
+                                group=optimizer,color=optimizer)) +
+  geom_line( )+
+  geom_point( )+labs(title="Two Color: Elapsed ms.")
+print(twoc_rest_g)
+
+
+two_c_cnt_g<-ggplot(data=two_c, aes(x=xIndex, y=optimal_count,
+                                group=optimizer,color=optimizer)) +
+  geom_line( )+
+  geom_point( )+labs(title="Two Color: Optimal Count")
+print(two_c_cnt_g)
