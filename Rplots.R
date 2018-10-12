@@ -90,3 +90,8 @@ two_c_cnt_g<-ggplot(data=two_c, aes(x=xIndex, y=optimal_count,
   geom_line( )+
   geom_point( )+labs(title="Two Color: Optimal Count")
 print(two_c_cnt_g)
+# 100 iterations
+two_c_1k<-read.csv("comp2C_1000.csv",header=FALSE)
+colnames(two_c_1k)<-c("optimizer","elapsed_ms","optimal_count")
+two_c_1k$xIndex <- as.numeric(row.names(two_c_1k))
+twoc_1k_mean<-aggregate(. ~ optimizer,two_c_1k[-4],mean)
