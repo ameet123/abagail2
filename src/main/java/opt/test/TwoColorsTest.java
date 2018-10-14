@@ -49,7 +49,6 @@ public class TwoColorsTest {
         FixedIterationTrainer fit = new FixedIterationTrainer(rhc, iterations);
         fit.train();
         end = Instant.now();
-
         rhcResult = "RHC," + Duration.between(start, end).toMillis() + "," + ef.value(rhc.getOptimal());
 //        System.out.println(rhcResult);
 

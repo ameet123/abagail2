@@ -83,8 +83,6 @@ twoc_rest_g<-ggplot(data=twoc_sans_mimic, aes(x=xIndex, y=elapsed_ms,
   geom_line( )+
   geom_point( )+labs(title="Two Color: Elapsed ms.")
 print(twoc_rest_g)
-
-
 two_c_cnt_g<-ggplot(data=two_c, aes(x=xIndex, y=optimal_count,
                                 group=optimizer,color=optimizer)) +
   geom_line( )+
@@ -95,3 +93,13 @@ two_c_1k<-read.csv("comp2C_1000.csv",header=FALSE)
 colnames(two_c_1k)<-c("optimizer","elapsed_ms","optimal_count")
 two_c_1k$xIndex <- as.numeric(row.names(two_c_1k))
 twoc_1k_mean<-aggregate(. ~ optimizer,two_c_1k[-4],mean)
+
+# TSP
+# means
+tsp<-read.csv("compTSP_.csv",header=FALSE)
+colnames(tsp)<-c("optimizer","elapsed_ms","inverse_dist","shortest_distance")
+tsp$xIndex <- as.numeric(row.names(tsp))
+tsp_mean<-aggregate(. ~ optimizer,tsp[-5],mean)
+tsp_g<-ggplot(data=tsp,aes(x=xIndex,y=shortest_distance,group=optimizer,color=optimizer))+
+  geom_line()+geom_point() + labs(tile="Traveling Salesman: Shortest distance")
+print(tsp_g)
