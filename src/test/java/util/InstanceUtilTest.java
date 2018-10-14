@@ -14,7 +14,7 @@ public class InstanceUtilTest {
 
     @Test
     public void loadInstances() {
-        Instance[] instances = InstanceUtil.loadInstances(eyeFile, 15, true, 14);
+        Instance[] instances = InstanceUtil.loadInstances("data/foo.csv", 15, true, 14);
         List<Instance[]> testTrainSplit = InstanceUtil.testTrainSplit(instances, 5);
         LOGGER.info("Training ==>{}", testTrainSplit.get(0).length);
         LOGGER.info("Testing ==>{}", testTrainSplit.get(1).length);

@@ -101,5 +101,25 @@ colnames(tsp)<-c("optimizer","elapsed_ms","inverse_dist","shortest_distance")
 tsp$xIndex <- as.numeric(row.names(tsp))
 tsp_mean<-aggregate(. ~ optimizer,tsp[-5],mean)
 tsp_g<-ggplot(data=tsp,aes(x=xIndex,y=shortest_distance,group=optimizer,color=optimizer))+
-  geom_line()+geom_point() + labs(tile="Traveling Salesman: Shortest distance")
+  geom_line()+geom_point() + labs(title="Traveling Salesman: Shortest distance")
 print(tsp_g)
+
+# Four peaks
+fourp<-read.csv("compFourPeaks.csv",header=FALSE)
+colnames(fourp)<-c("optimizer","iteration","elapsed_ms","optima")
+fourp$xIndex <- as.numeric(row.names(fourp)) 
+aggregate(. ~ optimizer,fourp[-5],max)
+fourp_g<-ggplot(data = fourp,aes(x=xIndex,y=optima, group=optimizer,color=optimizer))+
+  geom_line()+geom_point()+labs(title="Four Peaks: Optima",x="runs")
+print(fourp_g)
+#elapsed
+fourp_time_g<-ggplot(data = fourp,aes(x=xIndex,y=elapsed_ms, 
+                                      group=optimizer,color=optimizer))+
+  geom_line()+geom_point()+labs(title="Four Peaks: Elapsed ms.",x="runs")
+print(fourp_time_g)
+# iterations
+#elapsed
+fourp_iter_g<-ggplot(data = fourp,aes(x=xIndex,y=iteration, 
+                                      group=optimizer,color=optimizer))+
+  geom_line()+geom_point()+labs(title="Four Peaks: Iterations",x="runs")
+print(fourp_iter_g)

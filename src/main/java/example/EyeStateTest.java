@@ -33,7 +33,7 @@ public class EyeStateTest {
     private static DecimalFormat df = new DecimalFormat("0.00");
     private static String[] oaNames = {"RHC", "SA", "GA"};
 
-    private static int[] optIterations = new int[]{4000, 4000, 50};
+    private static int[] optIterations = new int[]{1000, 2000, 100};
 
     private BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     private BackPropagationNetwork networks[] = new BackPropagationNetwork[3];
@@ -71,7 +71,7 @@ public class EyeStateTest {
         int printThreshold = Math.round(myIterations / 10);
         ErrorMeasure measure = new SumOfSquaresError();
         LOGGER.info("\nError results for " + oaName + "\n---------------------------");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(oaName + "_error.csv"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("output/" + oaName + "_error.csv"));
         for (int i = 0; i < myIterations; i++) {
             oa.train();
             double error = 0;
@@ -106,7 +106,7 @@ public class EyeStateTest {
             start = System.nanoTime();
             int printThreshold = Math.round(trainSet.length / 10);
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(oaNames[i] + "_acc_testTime.csv"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("output/" + oaNames[i] + "_acc_testTime.csv"));
 
             for (int j = 0; j < trainSet.length; j++) {
                 networks[i].setInputValues(trainSet[j].getData());
@@ -125,8 +125,8 @@ public class EyeStateTest {
                 acc = df.format(correct / (correct + incorrect) * 100);
                 if (j % printThreshold == 0) {
                     LOGGER.info("\n[{}:{}]-> Results for " + oaNames[i] + ": Correct:" + correct +
-                            " Incorrect: " + incorrect + "  Accuracy: "
-                            + acc + "% [ Testing time: " + df.format(testingTime) + " sec.]\n", oaNames[i],
+                                    " Incorrect: " + incorrect + "  Accuracy: "
+                                    + acc + "% [ Testing time: " + df.format(testingTime) + " sec.]\n", oaNames[i],
                             optIterations[i]);
                 }
                 writer.write(j + "," + df.format(testingTime) + "," + acc + "\n");

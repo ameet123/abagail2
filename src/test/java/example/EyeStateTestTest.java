@@ -10,7 +10,7 @@ public class EyeStateTestTest {
 
     @Test
     public void testEye() throws IOException {
-        new EyeStateTest(eyeFile);
+        new EyeStateTest("data/foo.csv");
     }
 
 }
